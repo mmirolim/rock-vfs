@@ -1,6 +1,7 @@
 package filesystem
 
 import datastructures.{List, Cons, Nil}
+import scala.annotation.tailrec
 
 class Dir(
   override val pPath: String,
@@ -22,7 +23,25 @@ class Dir(
 
   def addEntry(newEntry: DirEntry): Dir = new Dir(pPath, name, contents ++ new Cons(newEntry, Nil))
 
-  
+  def hasEntry(name: String): Boolean = findEntry(name) != null
+
+  def findEntry(name: String): DirEntry = {
+    @tailrec
+    def walk(name: String, contents: List[DirEntry]): DirEntry = {
+      if (contents.isEmpty) null
+      else if (contents.head.name.equals(name)) contents.head
+      else walk(name, contents.tail)
+    }
+
+    walk(name, contents)
+  }
+
+  def getAllDirNamesInPath: List[String] = {
+    // /a/b/c/d => List["a","b", "c", "d"]
+    List.toList(path.substring(1).split(Dir.separator))
+  }
+
+  def findDescendant(path: List[String]): Dir = ???
 }
 
 object Dir {
@@ -32,4 +51,7 @@ object Dir {
     new Dir(pPath, name, Nil)
   }
   def newRoot: Dir = Dir.empty("","")
+
+  // TODO use regex
+  def validateName(name: String): Boolean = !(name.contains(".") || name.contains("/"))
 }

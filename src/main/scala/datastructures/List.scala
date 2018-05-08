@@ -1,5 +1,8 @@
 package datastructures
 
+import scala.annotation.tailrec
+
+
 trait List[+T] {
   def isEmpty: Boolean
   def head: T
@@ -20,6 +23,7 @@ object Nil extends List[Nothing] {
   override def add[S](el: S): List[S] = ???
   override def ++[S](l: List[S]): List[S] = l
   override def filter[S](pred: Predicate[S]): List[Nothing] = Nil
+
 }
 
 class Cons[T](val head: T, val tail: List[T]) extends List[T] {
@@ -38,4 +42,14 @@ object List {
     if (dpl.isEmpty) Nil
     else dpl.head ++ flatten(dpl.tail)
   }
+
+  def toList[T](arr: Array[T]): List[T] = {
+    @tailrec
+    def convert(arr: Array[T], agg: List[T]): List[T] = {
+      if (arr == null || arr.length == 0) agg
+      else convert(arr.slice(0, arr.length - 1), new Cons(arr(arr.length - 1), agg))
+    }
+
+    convert(arr, Nil)
+ }
 }
